@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+
+[project]
+name = "nl2sql_hub"
+version = "0.1.0"
+description = "NL2SQL hub"
+dependencies = [
+    "pgvector==0.2.3",
+    "accelerate==0.26.1",
+    "asyncpg==0.28.0",
+    "httpx==0.25.1",
+    "python-dotenv==1.0.0",
+    "nest_asyncio==1.5.8",
+    "pandas==2.1.1",
+    "pydantic==2.3.0",
+    "langchain==0.0.322",
+    "openai==1.10.0",
+    "text-generation==0.6.1",
+    "SQLAlchemy==2.0.22",
+    "loguru==0.7.2",
+    "fastapi==0.104.0",
+    "uvicorn==0.23.1",
+    "click==8.1.7",
+    "requests==2.31.0",
+    "torch==2.1.2",
+    "transformers==4.37.2",
+    "tiktoken==0.5.2",
+    "sentence_transformers==2.5.1",
+    "pymysql==1.1.0",
+    "chromadb",
+    "pysqlite3-binary",
+    "psycopg2-binary==2.9.9",
+    "cryptography==41.0.5",
+    "clickhouse-sqlalchemy@https://nexus.4pd.io/repository/pypi-dev/packages/clickhouse-sqlalchemy/0.2.4/clickhouse-sqlalchemy-0.2.4.tar.gz"
+]
+
+[tool.setuptools]
+packages = []
+
+[project.optional-dependencies]
+"dev" = [
+    "pytest==6.2.5",
+    "pytest-cov==3.0.0",
+    "black==21.9b0",
+    "isort==5.9.3",
+    "mypy==0.910",
+    "flake8==4.0.1",
+    "flake8-bugbear==21.9.2",
+    "flake8-comprehensions==3.6.1",
+    "flake8-docstrings==1.6.0",
+    "flake8-import-order==0.18.1",
+    "flake8-annotations==2.6.2",
+    "flake8-eradicate==0.5.1",
+    "flake8-bandit==3.3.1",
+    "flake8-logging-format==0.6.0", ]
+
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+files = "src"

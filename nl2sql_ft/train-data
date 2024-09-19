@@ -1,0 +1,398 @@
+Arguments: (
+    [
+        TrainData(
+            query='2022年华夏银行的存货减少了多少？',
+            sql="""SELECT
+            sum(inventory_decrease) AS total_inventory_decrease
+            FROM
+            cash_flow_CN_STOCK_A a
+            INNER JOIN basic_info_CN_STOCK_A b ON a.instrument = b.instrument
+            WHERE
+            YEAR(a.report_date) = 2022 AND b.name = '华夏银行'""",
+            order=False
+        ),
+        TrainData(
+            query='2022年上港集团是否有信用减值损失？',
+            sql="""SELECT
+            IFNULL(SUM(credit_impairment_loss), 0) AS total_credit_impairment_loss
+            FROM
+            cash_flow_CN_STOCK_A t1
+            INNER JOIN basic_info_CN_STOCK_A t2 ON t1.instrument = t2.instrument
+            AND t2.name = '上港集团'
+            WHERE
+            YEAR (report_date) = '2022'""",
+            order=False
+        ),
+        TrainData(
+            query='2022年格力电器的现金流量表中的经营活动现金流量净额是多少？',
+            sql="""SELECT
+            IFNULL(sum(sub_total_of_ci_from_oa), 0) - IFNULL(sum(sub_total_of_cos_from_oa), 0) AS 经营活动现金流量净额
+            FROM
+            cash_flow_CN_STOCK_A t1
+            INNER JOIN basic_info_CN_STOCK_A t2 ON t1.instrument = t2.instrument
+            AND t2.NAME = '格力电器'
+            WHERE
+            YEAR(report_date) = 2022""",
+            order=False
+        ),
+        TrainData(
+            query='2022年华夏银行和格力电器哪家公司的经营活动现金流入小计更高？',
+            sql="""SELECT
+            name,sub_total_of_ci_from_oa
+            FROM
+            (
+                SELECT
+                b.name,
+                sum(a.sub_total_of_ci_from_oa) AS sub_total_of_ci_from_oa
+                FROM
+                cash_flow_CN_STOCK_A a
+                INNER JOIN basic_info_CN_STOCK_A b ON a.instrument = b.instrument
+                WHERE
+                YEAR (a.report_date) = 2022 AND b.name IN ('格力电器', '华夏银行')
+                GROUP BY
+                b.name
+            ) k
+            ORDER BY
+            k.sub_total_of_ci_from_oa DESC
+            LIMIT 1""",
+            order=False
+        ),
+        TrainData(
+            query='2022年华夏银行的现金等价物的期末余额是多少？',
+            sql="""SELECT
+            IFNULL(sum(si_final_balance_of_cce), 0) AS si_final_balance_of_cce
+            FROM
+            cash_flow_CN_STOCK_A a
+            INNER JOIN basic_info_CN_STOCK_A b ON a.instrument = b.instrument
+            WHERE
+            YEAR(a.report_date) = 2022
+            AND b.NAME = '华夏银行'""",
+            order=False
+        ),
+        TrainData(
+            query='2022年格力电器的偿还债务支付的现金是多少？',
+            sql="""SELECT
+            IFNULL(sum(cash_pay_for_debt),0) as cash_pay_for_debt
+            FROM
+            cash_flow_CN_STOCK_A a
+            INNER JOIN basic_info_CN_STOCK_A b ON a.instrument = b.instrument
+            WHERE
+            YEAR(a.report_date) = 2022 AND b.company_name = '格力电器'""",
+            order=False
+        ),
+        TrainData(
+            query='2022年格力电器的偿还债务支付的现金是多少？',
+            sql="""SELECT
+            IFNULL(sum(a.cash_pay_for_debt),0) as cash_pay_for_debt
+            FROM
+            cash_flow_CN_STOCK_A a
+            INNER JOIN basic_info_CN_STOCK_A b ON a.instrument = b.instrument
+            WHERE
+            YEAR(a.report_date) = 2022 AND b.name = '格力电器'""",
+            order=False
+        ),
+        TrainData(
+            query='2022年华夏银行的现金等价物的期初余额是多少？',
+            sql="""SELECT
+            IFNULL(sum(initial_balance_of_cce),0) as initial_balance_of_cce
+            FROM
+            cash_flow_CN_STOCK_A a
+            INNER JOIN basic_info_CN_STOCK_A b ON a.instrument = b.instrument WHERE
+            YEAR(a.report_date) = 2022 AND b.name = '华夏银行'""",
+            order=False
+        ),
+        TrainData(
+            query='2022年格力电器的支付利息、手续费及佣金的现金是多少？',
+            sql="""SELECT
+            IFNULL(sum(cash_paid_for_interests_etc),0) as cash_paid_for_interests_etc
+            FROM
+            cash_flow_CN_STOCK_A a
+            INNER JOIN basic_info_CN_STOCK_A b ON a.instrument = b.instrument
+            WHERE
+            YEAR(a.report_date) = 2022 AND b.name = '格力电器'""",
+            order=False
+        ),
+        TrainData(
+            query='2022年华夏银行的质押贷款净增加额是多少？',
+            sql="""SELECT
+            IFNULL(sum(net_add_in_pledge_loans),0) as net_add_in_pledge_loans
+            FROM
+            cash_flow_CN_STOCK_A a
+            INNER JOIN basic_info_CN_STOCK_A b ON a.instrument = b.instrument
+            WHERE
+            YEAR(a.report_date) = 2022 AND b.name = '华夏银行'""",
+            order=False
+        ),
+        TrainData(
+            query='2022年格力电器的投资支付的现金是多少？',
+            sql="""SELECT
+            IFNULL(sum(invest_paid_cash),0) as invest_paid_cash
+            FROM
+            cash_flow_CN_STOCK_A a
+            INNER JOIN basic_info_CN_STOCK_A b ON a.instrument = b.instrument
+            WHERE
+            YEAR(a.report_date) = 2022 AND b.name = '格力电器'""",
+            order=False
+        ),
+        TrainData(
+            query='2022年华夏银行的取得投资收益收到的现金是多少？',
+            sql="""SELECT
+            IFNULL(sum(invest_income_cash_received), 0) AS invest_income_cash_received
+            FROM
+            cash_flow_CN_STOCK_A a
+            INNER JOIN basic_info_CN_STOCK_A b ON a.instrument = b.instrument
+            WHERE
+            YEAR(a.report_date) = 2022
+            AND b.NAME = '华夏银行'""",
+            order=False
+        ),
+        TrainData(
+            query='2022年格力电器的现金及现金等价物净增加额是多少？',
+            sql="""SELECT
+            IFNULL(sum(net_increase_in_cce),0) AS net_increase_in_cce
+            FROM
+            cash_flow_CN_STOCK_A a
+            INNER JOIN basic_info_CN_STOCK_A b ON a.instrument = b.instrument
+            WHERE
+            YEAR(a.report_date) = 2022
+            AND b.NAME = '格力电器'""",
+            order=False
+        ),
+        TrainData(
+            query='2022年华夏银行的筹资活动现金流入小计是多少？',
+            sql="""SELECT
+            IFNULL(sum(a.sub_total_of_ci_from_fa),0) as sub_total_of_ci_from_fa
+            FROM
+            cash_flow_CN_STOCK_A a
+            INNER JOIN basic_info_CN_STOCK_A b ON a.instrument = b.instrument
+            WHERE
+            YEAR(a.report_date) = 2022 AND b.name = '华夏银行'""",
+            order=False
+        ),
+        TrainData(
+            query='2022年格力电器的筹资活动现金流出小计是多少？',
+            sql="""SELECT
+            sum(a.sub_total_of_cos_from_fa) AS sub_total_of_ci_from_fa
+            FROM
+            cash_flow_CN_STOCK_A a
+            INNER JOIN basic_info_CN_STOCK_A b ON a.instrument = b.instrument
+            WHERE
+            YEAR(a.report_date) = 2022 AND b.name = '格力电器'""",
+            order=False
+        ),
+        TrainData(
+            query='2022年华夏银行和格力电器哪家公司的筹资活动现金流入小计更高？',
+            sql="""SELECT
+            NAME,
+            sub_total_of_ci_from_fa
+            FROM
+            (
+                SELECT
+                b.NAME,
+                IFNULL(sum(a.sub_total_of_ci_from_fa),0) AS sub_total_of_ci_from_fa
+                FROM
+                cash_flow_CN_STOCK_A a
+                INNER JOIN basic_info_CN_STOCK_A b ON a.instrument = b.instrument
+                WHERE
+                YEAR(a.report_date) = 2022
+                AND b.NAME IN ('格力电器', '华夏银行')
+                GROUP BY
+                b.NAME
+            ) k
+            ORDER BY
+            k.sub_total_of_ci_from_fa DESC
+            LIMIT 1""",
+            order=False
+        ),
+        TrainData(
+            query='2022年华夏银行的支付其他与经营活动有关的现金是多少？',
+            sql="""SELECT
+            IFNULL(sum(other_cash_paid_related_to_oa),0) as other_cash_paid_related_to_oa
+            FROM
+            cash_flow_CN_STOCK_A a
+            INNER JOIN basic_info_CN_STOCK_A b ON a.instrument = b.instrument
+            WHERE
+            YEAR(a.report_date) = 2022 AND b.name = '华夏银行'""",
+            order=False
+        ),
+        TrainData(
+            query='2022年华夏银行的经营活动产生的现金流量净额是多少？',
+            sql="""SELECT
+            sum(ci_from_oa) AS total_ci_from_oa, sum(cos_from_oa) AS total_cos_from_oa, 
+            (sum(ci_from_oa) - sum(cos_from_oa)) AS net_cf_from_oa 
+            FROM
+            cash_flow_CN_STOCK_A a
+            INNER JOIN basic_info_CN_STOCK_A b ON a.instrument = b.instrument
+            WHERE
+            YEAR(a.report_date) = 2022 AND b.name = '华夏银行'""",
+            order=False
+        ),
+        TrainData(
+            query='2022年格力电器的筹资活动产生的现金流量净额是多少？',
+            sql="""SELECT
+            sum(ci_from_fa) AS total_ci_from_fa, sum(cos_from_fa) AS total_cos_from_fa, 
+            (sum(ci_from_fa) - sum(cos_from_fa)) AS net_cf_from_fa 
+            FROM
+            cash_flow_CN_STOCK_A a
+            INNER JOIN basic_info_CN_STOCK_A b ON a.instrument = b.instrument
+            WHERE
+            YEAR(a.report_date) = 2022 AND b.name = '格力电器'""",
+            order=False
+        ),
+        TrainData(
+            query='2022年华夏银行的销售商品、提供劳务收到的现金是多少？',
+            sql="""SELECT
+            IFNULL(sum(a.cash_received_of_selling_goods_and_services),0) as cash_received_of_selling_goods_and_services
+            FROM
+            cash_flow_CN_STOCK_A a
+            INNER JOIN basic_info_CN_STOCK_A b ON a.instrument = b.instrument WHERE
+            YEAR(a.report_date) = 2022 AND b.name = '华夏银行'""",
+            order=False
+        )
+    ]
+)
+
+
+#table info
+
+CREATE TABLE etc_card_info (
+	card_id INTEGER COMMENT '卡ID', 
+	user_id INTEGER COMMENT '用户ID', 
+	vehicle_id INTEGER COMMENT '车辆ID', 
+	card_number VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '卡号', 
+	device_serial_number VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '设备序列号', 
+	name VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '持卡人姓名', 
+	phone VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '手机号', 
+	balance DOUBLE COMMENT '余额', 
+	status CHAR(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '卡状态 1-正常 2-挂失 3-注销 4-冻结', 
+	card_type CHAR(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '卡类型 1-普通卡 2-储值卡 3-记账卡', 
+	bank_account VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '绑定银行账户', 
+	card_issuer VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '发卡机构', 
+	issuer_time DATE COMMENT '发卡日期', 
+	expiration_date DATE COMMENT '有效期结束日期', 
+	last_trade_time DATE COMMENT '最后交易时间', 
+	last_trade_place VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '最后交易地点', 
+	remark VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '备注'
+)DEFAULT CHARSET=utf8mb3 ENGINE=InnoDB COMMENT='ETC卡信息表'
+
+/*
+1 rows from etc_card_info table:
+card_id	user_id	vehicle_id	card_number	device_serial_number	name	phone	balance	status	card_type	bank_account	card_issuer	issuer_time	expiration_date	last_trade_time	last_trade_place	remark
+
+*/
+
+
+CREATE TABLE toll_booth_access_info (
+	toll_booth_access_id INTEGER COMMENT '收费站通道ID', 
+	toll_station_id INTEGER COMMENT '收费站ID', 
+	passage_number VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '通道号', 
+	passage_type CHAR(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '通道类型 1-ETC通道 2-ETC/人工混用 3-人工通道', 
+	status CHAR(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '收费站通道状态 1-开放 -1 -关闭 0-维修中', 
+	passage_width INTEGER COMMENT '通道宽度 单位：米', 
+	passage_direction CHAR(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '通道方向 1-入口 2-出口', 
+	employee_id INTEGER COMMENT '员工ID'
+)DEFAULT CHARSET=utf8mb3 ENGINE=InnoDB COMMENT='收费站通道信息表'
+
+/*
+1 rows from toll_booth_access_info table:
+toll_booth_access_id	toll_station_id	passage_number	passage_type	status	passage_width	passage_direction	employee_id
+1	1	B001	1	1	5	1	0
+*/
+
+
+CREATE TABLE toll_station_info (
+	toll_station_id INTEGER COMMENT '收费站ID', 
+	toll_station_name VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '收费站名称', 
+	toll_station_code VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '收费站代码', 
+	passage_num INTEGER COMMENT '通道数', 
+	city VARCHAR(200) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '所在城市', 
+	location VARCHAR(200) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '经纬度', 
+	route_name VARCHAR(200) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '所在高速公路名称', 
+	status CHAR(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '收费站状态 1-开放 -1 -关闭 0-维修中', 
+	last_update_time DATE COMMENT '最后更新时间'
+)DEFAULT CHARSET=utf8mb3 ENGINE=InnoDB COMMENT='收费站信息表'
+
+/*
+1 rows from toll_station_info table:
+toll_station_id	toll_station_name	toll_station_code	passage_num	city	location	route_name	status	last_update_time
+1	京良收费站	A001	6	北京市	None	京港澳高速	1	None
+*/
+
+
+CREATE TABLE trade_info (
+	trade_id INTEGER COMMENT '交易ID', 
+	user_id INTEGER COMMENT '用户ID', 
+	vehicle_id INTEGER COMMENT '车辆ID', 
+	card_id INTEGER COMMENT '卡ID', 
+	vehicle_license VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '车牌号码', 
+	leave_toll_station_id INTEGER COMMENT '离开收费站ID', 
+	leave_toll_booth_access_id INTEGER COMMENT '离开通道ID', 
+	leave_time DATE COMMENT '离开时间', 
+	enter_toll_station_id INTEGER COMMENT '进入收费站ID', 
+	enter_toll_booth_access_id INTEGER COMMENT '进入通道ID', 
+	enter_time DATE COMMENT '进入时间', 
+	mileage DOUBLE COMMENT '行驶里程 单位：公里', 
+	driving_time INTEGER COMMENT '行驶时长 单位：分钟', 
+	toll_amount DOUBLE COMMENT '收费金额', 
+	discount_amount DOUBLE COMMENT '优惠金额', 
+	final_amount DOUBLE COMMENT '最终金额 支付金额', 
+	trade_time DATE COMMENT '交易时间', 
+	pay_type CHAR(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '支付方式 1-ETC支付 2-银行卡代扣', 
+	pay_status CHAR(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '支付状态 1-待支付 2-已支付 3-取消支付', 
+	employee_id INTEGER COMMENT '员工ID', 
+	remark VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '备注'
+)DEFAULT CHARSET=utf8mb3 ENGINE=InnoDB COMMENT='交易记录表'
+
+/*
+1 rows from trade_info table:
+trade_id	user_id	vehicle_id	card_id	vehicle_license	leave_toll_station_id	leave_toll_booth_access_id	leave_time	enter_toll_station_id	enter_toll_booth_access_id	enter_time	mileage	driving_time	toll_amount	discount_amount	final_amount	trade_time	pay_type	pay_status	employee_id	remark
+1	1	1	1	None	1	1	2023-06-02	10	4	2023-06-01	123.0000000000	110	120.0000000000	10.0000000000	110.0000000000	2023-06-02	1	2	None	None
+*/
+
+
+CREATE TABLE user_info (
+	user_id INTEGER COMMENT '用户ID', 
+	user_name VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '用户名', 
+	password VARCHAR(200) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '密码', 
+	real_name VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '姓名', 
+	phone VARCHAR(11) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '手机号', 
+	sex CHAR(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '性别', 
+	birth_date VARCHAR(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '出生日期', 
+	regist_time DATE COMMENT '注册时间'
+)DEFAULT CHARSET=utf8mb3 ENGINE=InnoDB COMMENT='用户信息表'
+
+/*
+1 rows from user_info table:
+user_id	user_name	password	real_name	phone	sex	birth_date	regist_time
+1	张三	123456	张三	13212341234	1	1996-12-12	2020-01-01
+*/
+
+
+CREATE TABLE vehicle_info (
+	vehicle_id INTEGER COMMENT '车辆ID', 
+	user_id INTEGER COMMENT '用户ID', 
+	vehicle_license VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '车牌号码', 
+	vehicle_type CHAR(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '车辆类型 1-小型汽车 2-小型货车 3-小型客车 4-中型货车 5-中型客车 6-大型货车 7-大型客车', 
+	vehicle_weight DOUBLE COMMENT '车辆净重', 
+	rated_weight DOUBLE COMMENT '额定载重量', 
+	rated_passenger INTEGER COMMENT '额度乘客数', 
+	energy_type CHAR(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '能源类型 1-燃油 2-新能源', 
+	vehicle_brand VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '车辆品牌', 
+	vehicle_model VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '车辆型号', 
+	vehicle_class VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '车辆等级 A级 B级 C级 D级', 
+	vehicle_color VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '车辆颜色', 
+	vehicle_owner VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '车辆所有人', 
+	vehicle_owner_number VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '车辆所有人证件号码', 
+	vin VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '车辆识别码', 
+	engine_number VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '发动机号', 
+	insurance_expiration_date DATE COMMENT '保险到期日期', 
+	inspection_expiration_date DATE COMMENT '年检到期日期', 
+	regist_time DATE COMMENT '注册时间', 
+	remark VARCHAR(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci COMMENT '备注'
+)DEFAULT CHARSET=utf8mb3 ENGINE=InnoDB COMMENT='车辆信息表'
+
+/*
+1 rows from vehicle_info table:
+vehicle_id	user_id	vehicle_license	vehicle_type	vehicle_weight	rated_weight	rated_passenger	energy_type	vehicle_brand	vehicle_model	vehicle_class	vehicle_color	vehicle_owner	vehicle_owner_number	vin	engine_number	insurance_expiration_date	inspection_expiration_date	regist_time	remark
+1	1	京A123451	1	19000.0000000000	25000.0000000000	5	2	比亚迪	汉	B级	黑色	张三	511324199612121234	11463782	111111111	2025-01-01	2025-01-01	2018-12-12	None
+*/

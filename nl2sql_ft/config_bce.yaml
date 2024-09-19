@@ -1,0 +1,50 @@
+basemodel: 'zhangwei03/deepseek-coder-33b-instruct'  # base 模型的路径（可自行存放于平台提供的 customer 存储中）
+task_service: False # 平台默认提供的召回服务，如果不需要可以忽略
+has_new_model: False # 是否有新的模型需要加载，用于微调榜，基础榜可以忽略
+jobs: [ ]
+leaderboard_options:
+  nfs:
+    - name: test
+      srcRelativePath: xutao/models/deepseek33b
+      mountPoint: /root/deepseek-coder-33b-instruct
+      source: ucloud_juicefs
+services:
+  - name: model # 名称
+    #image: harbor.4pd.io/lab-platform/model-services/vllm_xt:0.0.1
+    image: harbor.4pd.io/model_service_vllm/flash-vllm:0.4.1
+    env:
+      - name: MODEL_NAME
+        value: deepseek-coder-33b-instruct
+    shmSize: 32Gi
+    command: ["bash", "-c"]
+    args: ["python3 -m vllm.entrypoints.openai.api_server --host 0.0.0.0 --port 8080 --served-model-name ${MODEL_NAME} --model /root/deepseek-coder-33b-instruct --trust-remote-code --max-num-batched-tokens 16384 --max-model-len 16384 --gpu-memory-utilization 0.9 --tokenizer-mode auto --tensor-parallel-size 1 --dtype auto"]
+    resources: # 资源配置，请保持 limits 和 requests 一致
+      limits:
+        cpu: 2
+        memory: 16Gi
+        nvidia.com/gpu: 1 # requesting 1 GPU
+      requests:
+        cpu: 2
+        memory: 16Gi
+        nvidia.com/gpu: 1 # requesting 1 GPU
+    port: 8080 # 要暴露的端口
+  - name: nl2sql-service
+    image: harbor-contest.4pd.io/qiaosiyao/qiaosiyao_sql:1724383911693
+    env:
+      - name: OPENAI_API_BASE
+        value: http://model-$(STAGE)-$(JOB_ID):8080/v1
+      - name: OPENAI_API_KEY
+        value: none
+      - name: MODEL_NAME
+        value: deepseek-coder-33b-instruct
+    resources: # 资源配置，请保持 limits 和 requests 一致
+      limits:
+        cpu: 2
+        memory: 16Gi
+      requests:
+        cpu: 2
+        memory: 16Gi
+    port: 18080
+steps:
+  - model
+  - nl2sql-service
