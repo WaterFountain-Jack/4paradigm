@@ -1,0 +1,33 @@
+image: harbor.4pd.io/lab-platform/pk_platform/model_services/multi-ft:0720
+nodeSelector:
+  contest.4pd.io/accelerator: A100-SXM4-80GB 
+resources:
+  limits:
+    nvidia.com/gpu: 1
+readinessProbe:
+    httpGet:
+      path: /ready
+      port: 80 
+    initialDelaySeconds: 30 
+    periodSeconds: 10 
+    timeoutSeconds: 5
+api_config:
+  temperature: 0.95
+api_path: /v1/chat/completions 
+api_header:
+  key: value
+api_max_retries: 1
+api_retry_interval: 1.0
+env: 
+  - name: REPLY
+    value: C
+leaderboard_options:
+  nfs: # 挂载目录
+    - name: model1 # 挂载多个目录时需要不重复名字
+      srcRelativePath: baozhongyuan/models/vlm/InternVL2-8B/ # 如hanzebei/model，省略前面的/mnt/data，目录下文件大小不超过100G
+      mountPoint: /mnt/data/baozhongyuan/models/vlm/InternVL2-8B/ # 映射到docker内的路径，根据需求自行设置
+      source: ucloud_juicefs # 另一个集群只能挂1G，感觉没用了
+    - name: model2 # 挂载多个目录时需要不重复名字
+      srcRelativePath: baozhongyuan/models/vlm/InternVL-Chat-V1-5/ # 如hanzebei/model，省略前面的/mnt/data，目录下文件大小不超过100G
+      mountPoint: /mnt/data/baozhongyuan/models/vlm/InternVL-Chat-V1-5/ # 映射到docker内的路径，根据需求自行设置
+      source: ucloud_juicefs # 另一个集群只能挂1G，感觉没用了
